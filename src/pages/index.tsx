@@ -14,12 +14,12 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Cubix Slider</a>
+          Welcome to <a href="https://cubix-slider.vercel.app/home/p/1/edit">Cubix Slider</a>
         </h1>
 
       </main>
     </div>
   )
-}
+} 
 
 export default Home
