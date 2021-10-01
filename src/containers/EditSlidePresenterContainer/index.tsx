@@ -36,15 +36,30 @@ const options = {
   role: "host" as ClientRole
 };
 
+type RecordingResult = {
+  timestamps?: Array<RecordTimeStamp>,
+  file?: File
+}
+
+type RecordTimeStamp = {
+  slideIndex: number,
+  timestamp: number
+}
+
 export const EditSlidePresenterPageContainer = () => {
   const navPrevButtonRef = useRef<HTMLButtonElement>(null);
   const navNextButtonRef = useRef<HTMLButtonElement>(null);
   
   const [isPresenting, setIsPresenting] = useState(false);
+  const [isLive, setIsLive] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
 
+  const [swiper, setSwiper] = useState<SwiperCore | null>(null);
   const [agoraRtc, setAgoraRtc] = useState<IAgoraRTC | null>(null);
   const [client, setClient] = useState<IAgoraRTCClient | null>(null);
-  const [isLive, setIsLive] = useState(false);
+  const [recorder, setRecorder] = useState<any>(null);
+  const [recordingResult, setRecordingResult] = useState<RecordingResult | null>(null);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
     const loadAgora = async () => {
@@ -55,7 +70,20 @@ export const EditSlidePresenterPageContainer = () => {
     loadAgora();
   }, []);
 
-  const [localAudioTrack, setLocalAudioTrack] = useState<IMicrophoneAudioTrack | null>(null) 
+  useEffect(() => {
+    const loadRecorder = async () => {
+      const instance = (await import('mic-recorder')).default;
+      setRecorder(
+        new instance({
+          bitRate: 128
+        })
+      );
+    };
+
+    loadRecorder();
+  }, []);
+
+  const [localAudioTrack, setLocalAudioTrack] = useState<IMicrophoneAudioTrack | null>(null)
 
   const onBeforeInit = (swiper: SwiperCore) => {
     if (typeof swiper.params.navigation === 'boolean') {
@@ -92,8 +120,23 @@ export const EditSlidePresenterPageContainer = () => {
     }
   };
 
+  const recordSlideChange = (slideIndex: number) => {
+    if (!isRecording) {
+      return;
+    }
+
+    setRecordingResult((prev) => {
+      return {
+        ...prev, timestamps: [...(prev?.timestamps || []), {
+          slideIndex,
+          timestamp: recorder.context.currentTime
+        }]
+      }
+    })
+  }
+
   const createClient = () => {
-    if (!agoraRtc) return 
+    if (!agoraRtc) return
 
     const createdClient = agoraRtc.createClient({ mode: "live", codec: "vp8" })
     setClient(createdClient);
@@ -104,8 +147,8 @@ export const EditSlidePresenterPageContainer = () => {
   const startLive = async () => {
     const createdClient = createClient()
 
-    if (!createdClient) return 
-    if (!agoraRtc) return 
+    if (!createdClient) return
+    if (!agoraRtc) return
 
     createdClient.setClientRole(options.role);
     await createdClient.join(options.appId, options.channel, options.token, null);
@@ -125,8 +168,42 @@ export const EditSlidePresenterPageContainer = () => {
     if (isLive) endLive()
     else startLive()
 
-    setIsLive((prev) => !prev) 
+    setIsLive((prev) => !prev)
   }
+
+  const onPreRecord = async () => {
+    if (isRecording) {
+      var [buffer, blob] = await recorder.stop().getAudio();
+      const file = new File(buffer, 'me-at-thevoice.mp3', {
+        type: blob.type,
+        lastModified: Date.now()
+      });
+
+      var createdRecordingResult = {...recordingResult, file }
+      setRecordingResult(createdRecordingResult)
+
+      // TODO Integration
+      // const player = new Audio(URL.createObjectURL(file));
+      // player.play();
+    } else {
+      await recorder.start();
+      setRecordingResult((prev) => {
+        return {
+          ...prev, timestamps: []
+        }
+      })
+    }
+
+    setIsRecording((prev) => !prev)
+  }
+
+  useEffect(() => {
+    if (!swiper) {
+      return;
+    }
+
+    swiper.slideTo(activeSlide);
+  }, [activeSlide, swiper]);
 
   return (
     <>
@@ -141,11 +218,13 @@ export const EditSlidePresenterPageContainer = () => {
             setIsPresenting(status);
           }}
           onMicOpen={onMicOpen}
+          onPreRecord={onPreRecord}
         />
         <StyledSwiper
           onBeforeInit={onBeforeInit}
           spaceBetween={50}
           slidesPerView={1}
+          onSwiper={(swiper) => setSwiper(swiper)}
           keyboard={{
             enabled: true,
           }}
@@ -156,6 +235,7 @@ export const EditSlidePresenterPageContainer = () => {
           onSlideChange={(swiper) => {
             const slideIndex = swiper.activeIndex;
             handleOnSlideChange(slideIndex);
+            recordSlideChange(slideIndex);
           }}
         >
           <SwiperSlide>
