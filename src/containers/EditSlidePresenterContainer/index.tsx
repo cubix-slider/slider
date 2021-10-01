@@ -3,10 +3,15 @@ import React, { useRef, useState, useEffect } from 'react';
 import SwiperCore, { Navigation, Keyboard } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-import { IAgoraRTCClient, ClientRole, IMicrophoneAudioTrack, IAgoraRTC } from 'agora-rtc-sdk-ng';
+import {
+  IAgoraRTCClient,
+  ClientRole,
+  IMicrophoneAudioTrack,
+  IAgoraRTC,
+} from 'agora-rtc-sdk-ng';
 
 import { Box, styled } from '@mui/system';
-import { Typography, IconButton } from '@mui/material';
+import { Typography, IconButton, Divider, Button } from '@mui/material';
 
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -27,29 +32,30 @@ const StyledSwiper = styled(Swiper)`
 
 const options = {
   // Pass your app ID here.
-  appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || "",
+  appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || '',
   // Set the channel name.
-  channel: "test-channel",
+  channel: 'test-channel',
   // Pass a token if your project enables the App Certificate.
-  token: "006d32246dedc6f421fb57687c4e957bd93IABYwlQDUMfGjbaDNYXqm/74eX8VQctTrGhO6kkTvlP272LMzZAAAAAAEADSvifOO4FYYQEAAQA8gVhh",
+  token:
+    '006d32246dedc6f421fb57687c4e957bd93IABYwlQDUMfGjbaDNYXqm/74eX8VQctTrGhO6kkTvlP272LMzZAAAAAAEADSvifOO4FYYQEAAQA8gVhh',
   // Set the user role in the channel.
-  role: "host" as ClientRole
+  role: 'host' as ClientRole,
 };
 
 type RecordingResult = {
-  timestamps?: Array<RecordTimeStamp>,
-  file?: File
-}
+  timestamps?: Array<RecordTimeStamp>;
+  file?: File;
+};
 
 type RecordTimeStamp = {
-  slideIndex: number,
-  timestamp: number
-}
+  slideIndex: number;
+  timestamp: number;
+};
 
 export const EditSlidePresenterPageContainer = () => {
   const navPrevButtonRef = useRef<HTMLButtonElement>(null);
   const navNextButtonRef = useRef<HTMLButtonElement>(null);
-  
+
   const [isPresenting, setIsPresenting] = useState(false);
   const [isLive, setIsLive] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -58,7 +64,8 @@ export const EditSlidePresenterPageContainer = () => {
   const [agoraRtc, setAgoraRtc] = useState<IAgoraRTC | null>(null);
   const [client, setClient] = useState<IAgoraRTCClient | null>(null);
   const [recorder, setRecorder] = useState<any>(null);
-  const [recordingResult, setRecordingResult] = useState<RecordingResult | null>(null);
+  const [recordingResult, setRecordingResult] =
+    useState<RecordingResult | null>(null);
   const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
@@ -75,7 +82,7 @@ export const EditSlidePresenterPageContainer = () => {
       const instance = (await import('mic-recorder')).default;
       setRecorder(
         new instance({
-          bitRate: 128
+          bitRate: 128,
         })
       );
     };
@@ -83,7 +90,8 @@ export const EditSlidePresenterPageContainer = () => {
     loadRecorder();
   }, []);
 
-  const [localAudioTrack, setLocalAudioTrack] = useState<IMicrophoneAudioTrack | null>(null)
+  const [localAudioTrack, setLocalAudioTrack] =
+    useState<IMicrophoneAudioTrack | null>(null);
 
   const onBeforeInit = (swiper: SwiperCore) => {
     if (typeof swiper.params.navigation === 'boolean') {
@@ -111,12 +119,12 @@ export const EditSlidePresenterPageContainer = () => {
       return fetch(endpoint, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ slideIndex }),
       });
     } catch (error) {
-      console.log('error', error); 
+      console.log('error', error);
     }
   };
 
@@ -127,60 +135,69 @@ export const EditSlidePresenterPageContainer = () => {
 
     setRecordingResult((prev) => {
       return {
-        ...prev, timestamps: [...(prev?.timestamps || []), {
-          slideIndex,
-          timestamp: recorder.context.currentTime
-        }]
-      }
-    })
-  }
+        ...prev,
+        timestamps: [
+          ...(prev?.timestamps || []),
+          {
+            slideIndex,
+            timestamp: recorder.context.currentTime,
+          },
+        ],
+      };
+    });
+  };
 
   const createClient = () => {
-    if (!agoraRtc) return
+    if (!agoraRtc) return;
 
-    const createdClient = agoraRtc.createClient({ mode: "live", codec: "vp8" })
+    const createdClient = agoraRtc.createClient({ mode: 'live', codec: 'vp8' });
     setClient(createdClient);
 
     return createdClient;
-  }
+  };
 
   const startLive = async () => {
-    const createdClient = createClient()
+    const createdClient = createClient();
 
-    if (!createdClient) return
-    if (!agoraRtc) return
+    if (!createdClient) return;
+    if (!agoraRtc) return;
 
     createdClient.setClientRole(options.role);
-    await createdClient.join(options.appId, options.channel, options.token, null);
+    await createdClient.join(
+      options.appId,
+      options.channel,
+      options.token,
+      null
+    );
 
     var audioTrack = await agoraRtc.createMicrophoneAudioTrack();
     setLocalAudioTrack(audioTrack);
 
     await createdClient.publish([audioTrack]);
-  }
+  };
 
   const endLive = async () => {
-    localAudioTrack?.close()
-    client?.leave()
-  }
+    localAudioTrack?.close();
+    client?.leave();
+  };
 
   const onMicOpen = async () => {
-    if (isLive) endLive()
-    else startLive()
+    if (isLive) endLive();
+    else startLive();
 
-    setIsLive((prev) => !prev)
-  }
+    setIsLive((prev) => !prev);
+  };
 
   const onPreRecord = async () => {
     if (isRecording) {
       var [buffer, blob] = await recorder.stop().getAudio();
       const file = new File(buffer, 'me-at-thevoice.mp3', {
         type: blob.type,
-        lastModified: Date.now()
+        lastModified: Date.now(),
       });
 
-      var createdRecordingResult = {...recordingResult, file }
-      setRecordingResult(createdRecordingResult)
+      var createdRecordingResult = { ...recordingResult, file };
+      setRecordingResult(createdRecordingResult);
 
       // TODO Integration
       // const player = new Audio(URL.createObjectURL(file));
@@ -189,13 +206,14 @@ export const EditSlidePresenterPageContainer = () => {
       await recorder.start();
       setRecordingResult((prev) => {
         return {
-          ...prev, timestamps: []
-        }
-      })
+          ...prev,
+          timestamps: [],
+        };
+      });
     }
 
-    setIsRecording((prev) => !prev)
-  }
+    setIsRecording((prev) => !prev);
+  };
 
   useEffect(() => {
     if (!swiper) {
@@ -247,6 +265,7 @@ export const EditSlidePresenterPageContainer = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 textAlign: 'center',
+                p: ['30px', null, '56px'],
               }}
             >
               <Typography variant="h1">Slider</Typography>
@@ -266,12 +285,106 @@ export const EditSlidePresenterPageContainer = () => {
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center',
+                justifyContent: 'start',
+                alignItems: 'start',
+                p: ['30px', null, '56px'],
               }}
             >
-              Slide 2
+              <Typography variant="h1">Slider</Typography>
+              <Divider sx={{ width: '100%' }} />
+              <Typography
+                variant="h5"
+                sx={{
+                  mt: '40px',
+                }}
+              >
+                An interactive way to create presentations
+              </Typography>
+            </Box>
+          </SwiperSlide>
+          <SwiperSlide>
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'start',
+                alignItems: 'start',
+                p: ['30px', null, '56px'],
+              }}
+            >
+              <Typography variant="h1">Anong hayop si Karlito? 🐒</Typography>
+              <Divider sx={{ width: '100%' }} />
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                  gap: '16px',
+                  width: '100%',
+                  height: '100%',
+                  my: '24px',
+                }}
+              >
+                {Array.from(new Array(2)).map((k) => (
+                  <Box
+                    key={k}
+                    component="img"
+                    src="https://via.placeholder.com/500"
+                    width="100%"
+                    height="100%"
+                  />
+                ))}
+              </Box>
+            </Box>
+          </SwiperSlide>
+          <SwiperSlide>
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'start',
+                alignItems: 'start',
+                p: ['30px', null, '56px'],
+              }}
+            >
+              <Typography variant="h3" textAlign="center">
+                {`Nakita mo na umiiyak si Danica sa hallway. Nalaman mo na si Danica ay "Broken Hearted". Ano ang iyong gagawin?`}
+              </Typography>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: ['1fr', null, 'repeat(2, 1fr)'],
+                  gap: '16px',
+                  my: '96px',
+                  mx: 'auto',
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
+                >
+                  Magpapayo kay Danica ng magagandang salita
+                </Button>
+                <Button
+                  variant="outlined"
+                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
+                >
+                  Tatawanan si Danica
+                </Button>
+                <Button
+                  variant="outlined"
+                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
+                >
+                  Bibigyan si Danica ng pang kulam
+                </Button>
+                <Button
+                  variant="outlined"
+                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
+                >
+                  Wala akong paki kay Danica
+                </Button>
+              </Box>
             </Box>
           </SwiperSlide>
           <SwiperSlide>
@@ -283,23 +396,18 @@ export const EditSlidePresenterPageContainer = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 textAlign: 'center',
+                p: ['30px', null, '56px'],
               }}
             >
-              Slide 3
-            </Box>
-          </SwiperSlide>
-          <SwiperSlide>
-            <Box
-              sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center',
-              }}
-            >
-              Slide 4
+              <Typography variant="h1">Slider</Typography>
+              <Typography
+                variant="h5"
+                sx={{
+                  mt: '40px',
+                }}
+              >
+                An interactive way to create presentations
+              </Typography>
             </Box>
           </SwiperSlide>
           <IconButton

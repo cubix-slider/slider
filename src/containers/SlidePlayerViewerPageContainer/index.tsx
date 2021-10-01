@@ -7,7 +7,7 @@ import SwiperCore, { Navigation, Keyboard, Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { Box, styled } from '@mui/system';
-import { Typography, IconButton } from '@mui/material';
+import { Typography, IconButton, Button, Divider } from '@mui/material';
 
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -194,7 +194,7 @@ export const SlidePlayerViewerPageContainer = () => {
             delay: 2000,
           }}
         >
-          <SwiperSlide>
+                    <SwiperSlide>
             <Box
               sx={{
                 height: '100%',
@@ -203,6 +203,7 @@ export const SlidePlayerViewerPageContainer = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 textAlign: 'center',
+                p: ['30px', null, '56px'],
               }}
             >
               <Typography variant="h1">Slider</Typography>
@@ -222,12 +223,21 @@ export const SlidePlayerViewerPageContainer = () => {
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center',
+                justifyContent: 'start',
+                alignItems: 'start',
+                p: ['30px', null, '56px'],
               }}
             >
-              Slide 2
+              <Typography variant="h1">Slider</Typography>
+              <Divider sx={{ width: '100%' }} />
+              <Typography
+                variant="h5"
+                sx={{
+                  mt: '40px',
+                }}
+              >
+                An interactive way to create presentations
+              </Typography>
             </Box>
           </SwiperSlide>
           <SwiperSlide>
@@ -236,12 +246,32 @@ export const SlidePlayerViewerPageContainer = () => {
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center',
+                justifyContent: 'start',
+                alignItems: 'start',
+                p: ['30px', null, '56px'],
               }}
             >
-              Slide 3
+              <Typography variant="h1">Anong hayop si Karlito? 🐒</Typography>
+              <Divider sx={{ width: '100%' }} />
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                  gap: '16px',
+                  width: '100%',
+                  my: '24px',
+                }}
+              >
+                {Array.from(new Array(2)).map((k) => (
+                  <Box
+                    key={k}
+                    component="img"
+                    src="https://via.placeholder.com/500"
+                    width="100%"
+                    height="100%"
+                  />
+                ))}
+              </Box>
             </Box>
           </SwiperSlide>
           <SwiperSlide>
@@ -250,12 +280,48 @@ export const SlidePlayerViewerPageContainer = () => {
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center',
+                justifyContent: 'start',
+                alignItems: 'start',
+                p: ['30px', null, '56px'],
               }}
             >
-              Slide 4
+              <Typography variant="h3" textAlign="center">
+                {`Nakita mo na umiiyak si Danica sa hallway. Nalaman mo na si Danica ay "Broken Hearted". Ano ang iyong gagawin?`}
+              </Typography>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: ['1fr', null, 'repeat(2, 1fr)'],
+                  gap: '16px',
+                  my: '96px',
+                  mx: 'auto',
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
+                >
+                  Magpapayo kay Danica ng magagandang salita
+                </Button>
+                <Button
+                  variant="outlined"
+                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
+                >
+                  Tatawanan si Danica
+                </Button>
+                <Button
+                  variant="outlined"
+                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
+                >
+                  Bibigyan si Danica ng pang kulam
+                </Button>
+                <Button
+                  variant="outlined"
+                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
+                >
+                  Wala akong paki kay Danica
+                </Button>
+              </Box>
             </Box>
           </SwiperSlide>
           <LinearBuffer />
