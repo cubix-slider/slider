@@ -26,19 +26,18 @@ const StyledSwiper = styled(Swiper)`
 
 const options = {
   // Pass your app ID here.
-  appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || "",
+  appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || '',
   // Set the channel name.
-  channel: "test-channel",
+  channel: 'test-channel',
   // Pass a token if your project enables the App Certificate.
-  token: "006d32246dedc6f421fb57687c4e957bd93IADUKrjxQvF4XnMSAcR1v2j5mVKk0R07IYkXjE1uRGlVJmLMzZAAAAAAEADSvifOb4FYYQEAAQBwgVhh",
+  token:
+    '006d32246dedc6f421fb57687c4e957bd93IADUKrjxQvF4XnMSAcR1v2j5mVKk0R07IYkXjE1uRGlVJmLMzZAAAAAAEADSvifOb4FYYQEAAQBwgVhh',
   // Set the user role in the channel.
-  role: "audience" as ClientRole
+  role: 'audience' as ClientRole,
 };
 
 export const SlideViewerPageContainer = () => {
-  const {
-    push,
-  } = useRouter();
+  const { push } = useRouter();
   const navPrevButtonRef = useRef<HTMLButtonElement>(null);
   const navNextButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -53,14 +52,22 @@ export const SlideViewerPageContainer = () => {
       const instance = (await import('agora-rtc-sdk-ng')).default;
       setAgoraRtc(instance);
 
-      const createdClient = instance.createClient({ mode: "live", codec: "vp8" })
-      setClient(createdClient)
-      
-      if (!createdClient) return 
-      if (!instance) return 
-      
+      const createdClient = instance.createClient({
+        mode: 'live',
+        codec: 'vp8',
+      });
+      setClient(createdClient);
+
+      if (!createdClient) return;
+      if (!instance) return;
+
       createdClient.setClientRole(options.role);
-      await createdClient.join(options.appId, options.channel, options.token, null)
+      await createdClient.join(
+        options.appId,
+        options.channel,
+        options.token,
+        null
+      );
 
       createdClient.on('user-published', async (user, mediaType) => {
         await createdClient.subscribe(user, mediaType);
@@ -75,23 +82,28 @@ export const SlideViewerPageContainer = () => {
   }, []);
 
   const createClient = () => {
-    if (!agoraRtc) return 
+    if (!agoraRtc) return;
 
-    const createdClient = agoraRtc.createClient({ mode: "live", codec: "vp8" })
+    const createdClient = agoraRtc.createClient({ mode: 'live', codec: 'vp8' });
     setClient(createdClient);
 
     return createdClient;
-  }
+  };
 
   // TODO - Remove
   const joinChannel = async (createdAgoraRtc: IAgoraRTC) => {
-    const createdClient = createClient()
+    const createdClient = createClient();
 
-    if (!createdClient) return 
-    if (!createdAgoraRtc) return 
-    
+    if (!createdClient) return;
+    if (!createdAgoraRtc) return;
+
     createdClient.setClientRole(options.role);
-    await createdClient.join(options.appId, options.channel, options.token, null)
+    await createdClient.join(
+      options.appId,
+      options.channel,
+      options.token,
+      null
+    );
 
     createdClient.on('user-published', async (user, mediaType) => {
       await createdClient.subscribe(user, mediaType);
@@ -100,11 +112,11 @@ export const SlideViewerPageContainer = () => {
         user.audioTrack?.play();
       }
     });
-  }
+  };
 
   const leaveChannel = async () => {
-    client?.leave()
-  }
+    client?.leave();
+  };
 
   const onBeforeInit = (swiper: SwiperCore) => {
     if (typeof swiper.params.navigation === 'boolean') {
@@ -126,7 +138,7 @@ export const SlideViewerPageContainer = () => {
     'event:slider-slide',
     (data: Record<'slideIndex', number>) => {
       setActiveSlide(data.slideIndex);
-    },
+    }
   );
 
   useEffect(() => {
@@ -145,9 +157,7 @@ export const SlideViewerPageContainer = () => {
           height: '100%',
         }}
       >
-        <SlideControls
-          onLeave={leaveChannel}
-        />
+        <SlideControls onLeave={leaveChannel} />
         <StyledSwiper
           onBeforeInit={onBeforeInit}
           spaceBetween={50}
