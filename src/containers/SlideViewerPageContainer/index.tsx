@@ -7,7 +7,7 @@ import SwiperCore, { Navigation, Keyboard } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { Box, styled } from '@mui/system';
-import { Typography, IconButton } from '@mui/material';
+import { Typography, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
 
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -49,9 +49,14 @@ export const SlideViewerPageContainer = () => {
 
   const [shouldStopAutoSync, setShouldStopAutoSync] = useState(false);
 
+  const [didAutoplayFailed, setDidAutoplayFailed] = useState(false);
+
   useEffect(() => {
     const loadAgora = async () => {
       const instance = (await import('agora-rtc-sdk-ng')).default;
+      instance.onAudioAutoplayFailed = () => {
+        setDidAutoplayFailed(true);
+      };
       setAgoraRtc(instance);
 
       const createdClient = instance.createClient({
@@ -172,6 +177,28 @@ export const SlideViewerPageContainer = () => {
           height: '100%',
         }}
       >
+        {didAutoplayFailed && (
+          <Dialog
+            open={didAutoplayFailed}
+            onClose={() => setDidAutoplayFailed(false)}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {"Cubix Slider encountered error with the sound from your end"}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Let Cubix Slider sync again your sound to provide better quality service
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setDidAutoplayFailed(false)} autoFocus>
+                Sync again
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
         <SlideControls onLeave={leaveChannel} onSync={handleOnSync} />
         <StyledSwiper
           onBeforeInit={onBeforeInit}
