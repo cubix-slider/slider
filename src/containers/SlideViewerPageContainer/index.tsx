@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/router';
 
@@ -14,6 +14,8 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { GlobalStyles } from '../../components/GlobalStyles';
 import { SlideControls } from './components/SlideControls';
 
+import { usePusherSubscribe } from '../../hooks/usePusherSubscribe';
+
 SwiperCore.use([Navigation, Keyboard]);
 
 const StyledSwiper = styled(Swiper)`
@@ -27,6 +29,9 @@ export const SlideViewerPageContainer = () => {
   } = useRouter();
   const navPrevButtonRef = useRef<HTMLButtonElement>(null);
   const navNextButtonRef = useRef<HTMLButtonElement>(null);
+
+  const [swiper, setSwiper] = useState<SwiperCore | null>(null);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   const onBeforeInit = (swiper: SwiperCore) => {
     if (typeof swiper.params.navigation === 'boolean') {
@@ -42,6 +47,22 @@ export const SlideViewerPageContainer = () => {
     navigation.prevEl = navPrevButtonRef.current;
     navigation.nextEl = navNextButtonRef.current;
   };
+
+  usePusherSubscribe(
+    'slide-1',
+    'event:slider-slide',
+    (data: Record<'slideIndex', number>) => {
+      setActiveSlide(data.slideIndex);
+    },
+  );
+
+  useEffect(() => {
+    if (!swiper) {
+      return;
+    }
+
+    swiper.slideTo(activeSlide);
+  }, [activeSlide, swiper]);
 
   return (
     <>
@@ -60,6 +81,7 @@ export const SlideViewerPageContainer = () => {
           onBeforeInit={onBeforeInit}
           spaceBetween={50}
           slidesPerView={1}
+          onSwiper={(swiper) => setSwiper(swiper)}
           keyboard={{
             enabled: true,
           }}

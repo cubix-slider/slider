@@ -16,7 +16,7 @@ const theme = createTheme({
 });
 
 export type SlideControlsProps = {
-  onPresent?: JSX.IntrinsicElements['button']['onClick'];
+  onPresent?: (event: MouseEvent<HTMLButtonElement>, status: boolean) => void;
   onPreRecord?: JSX.IntrinsicElements['button']['onClick'];
   onMicOpen?: JSX.IntrinsicElements['button']['onClick'];
 };
@@ -55,7 +55,7 @@ export const SlideControls = ({
     if (!onPresent) {
       return;
     }
-    onPresent(event);
+    onPresent(event, !isPresenting);
   };
 
   return (

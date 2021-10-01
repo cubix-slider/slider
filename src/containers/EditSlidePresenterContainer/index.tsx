@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 import SwiperCore, { Navigation, Keyboard } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -12,6 +12,8 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { GlobalStyles } from '../../components/GlobalStyles';
 import { SlideControls } from './components/SlideControls';
 
+import { ENV_BASE_URL } from '../../constants/envs';
+
 SwiperCore.use([Navigation, Keyboard]);
 
 const StyledSwiper = styled(Swiper)`
@@ -22,6 +24,8 @@ const StyledSwiper = styled(Swiper)`
 export const EditSlidePresenterPageContainer = () => {
   const navPrevButtonRef = useRef<HTMLButtonElement>(null);
   const navNextButtonRef = useRef<HTMLButtonElement>(null);
+  
+  const [isPresenting, setIsPresenting] = useState(false);
 
   const onBeforeInit = (swiper: SwiperCore) => {
     if (typeof swiper.params.navigation === 'boolean') {
@@ -38,6 +42,26 @@ export const EditSlidePresenterPageContainer = () => {
     navigation.nextEl = navNextButtonRef.current;
   };
 
+  const handleOnSlideChange = (slideIndex: number) => {
+    if (!isPresenting) {
+      return;
+    }
+
+    try {
+      const endpoint = `${ENV_BASE_URL}/api/slide`;
+
+      return fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ slideIndex }),
+      });
+    } catch (error) {
+      console.log('error', error); 
+    }
+  };
+
   return (
     <>
       <GlobalStyles />
@@ -46,7 +70,11 @@ export const EditSlidePresenterPageContainer = () => {
           height: '100%',
         }}
       >
-        <SlideControls />
+        <SlideControls
+          onPresent={(_event, status) => {
+            setIsPresenting(status);
+          }}
+        />
         <StyledSwiper
           onBeforeInit={onBeforeInit}
           spaceBetween={50}
@@ -57,6 +85,10 @@ export const EditSlidePresenterPageContainer = () => {
           navigation={{
             prevEl: navPrevButtonRef.current,
             nextEl: navNextButtonRef.current,
+          }}
+          onSlideChange={(swiper) => {
+            const slideIndex = swiper.activeIndex;
+            handleOnSlideChange(slideIndex);
           }}
         >
           <SwiperSlide>
