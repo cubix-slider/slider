@@ -47,6 +47,8 @@ export const SlideViewerPageContainer = () => {
   const [agoraRtc, setAgoraRtc] = useState<IAgoraRTC | null>(null);
   const [client, setClient] = useState<IAgoraRTCClient | null>(null);
 
+  const [shouldStopAutoSync, setShouldStopAutoSync] = useState(false);
+
   useEffect(() => {
     const loadAgora = async () => {
       const instance = (await import('agora-rtc-sdk-ng')).default;
@@ -133,6 +135,15 @@ export const SlideViewerPageContainer = () => {
     navigation.nextEl = navNextButtonRef.current;
   };
 
+  const handleOnSync = () => {
+    if (!swiper) {
+      return;
+    }
+
+    swiper.slideTo(activeSlide);
+    setShouldStopAutoSync(false);
+  };
+
   usePusherSubscribe(
     'slide-1',
     'event:slider-slide',
@@ -142,12 +153,16 @@ export const SlideViewerPageContainer = () => {
   );
 
   useEffect(() => {
+    if (shouldStopAutoSync) {
+      return;
+    }
+
     if (!swiper) {
       return;
     }
 
     swiper.slideTo(activeSlide);
-  }, [activeSlide, swiper]);
+  }, [activeSlide, shouldStopAutoSync, swiper]);
 
   return (
     <>
@@ -157,7 +172,7 @@ export const SlideViewerPageContainer = () => {
           height: '100%',
         }}
       >
-        <SlideControls onLeave={leaveChannel} />
+        <SlideControls onLeave={leaveChannel} onSync={handleOnSync} />
         <StyledSwiper
           onBeforeInit={onBeforeInit}
           spaceBetween={50}
@@ -243,6 +258,9 @@ export const SlideViewerPageContainer = () => {
               right: 72,
               zIndex: 2,
             }}
+            onClick={() => {
+              setShouldStopAutoSync(true);
+            }}
           >
             <KeyboardArrowLeftIcon />
           </IconButton>
@@ -253,6 +271,9 @@ export const SlideViewerPageContainer = () => {
               bottom: 24,
               right: 24,
               zIndex: 2,
+            }}
+            onClick={() => {
+              setShouldStopAutoSync(true);
             }}
           >
             <KeyboardArrowRightIcon />

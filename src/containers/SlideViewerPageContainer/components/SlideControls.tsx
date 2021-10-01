@@ -1,9 +1,10 @@
 import React, { MouseEvent } from 'react';
 
 import { Box } from '@mui/system';
-import { Button, createTheme, ThemeProvider } from '@mui/material';
+import { Button, createTheme, IconButton, ThemeProvider } from '@mui/material';
 
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import SyncIcon from '@mui/icons-material/Sync';
 
 const theme = createTheme({
   palette: {
@@ -15,10 +16,9 @@ const theme = createTheme({
 
 export type SlideControlsProps = {
   onLeave?: JSX.IntrinsicElements['button']['onClick'];
+  onSync?: JSX.IntrinsicElements['button']['onClick'];
 };
-export const SlideControls = ({
-  onLeave,
-}: SlideControlsProps) => {
+export const SlideControls = ({ onLeave, onSync }: SlideControlsProps) => {
   const handleOnLeave = (event: MouseEvent<HTMLButtonElement>) => {
     if (!onLeave) {
       return;
@@ -37,6 +37,9 @@ export const SlideControls = ({
           zIndex: 2,
         }}
       >
+        <IconButton color="primary" onClick={onSync}>
+          <SyncIcon />
+        </IconButton>
         <Button
           variant="outlined"
           endIcon={<MeetingRoomIcon />}
