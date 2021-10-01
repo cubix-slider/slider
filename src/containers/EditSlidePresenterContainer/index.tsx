@@ -1,7 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 import SwiperCore, { Navigation, Keyboard } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
+
+import { IAgoraRTCClient, ClientRole, IMicrophoneAudioTrack, IAgoraRTC } from 'agora-rtc-sdk-ng';
 
 import { Box, styled } from '@mui/system';
 import { Typography, IconButton } from '@mui/material';
@@ -14,6 +16,8 @@ import { SlideControls } from './components/SlideControls';
 
 import { ENV_BASE_URL } from '../../constants/envs';
 
+// TODO Token Generator
+
 SwiperCore.use([Navigation, Keyboard]);
 
 const StyledSwiper = styled(Swiper)`
@@ -21,11 +25,37 @@ const StyledSwiper = styled(Swiper)`
   height: 100%;
 `;
 
+const options = {
+  // Pass your app ID here.
+  appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || "",
+  // Set the channel name.
+  channel: "test-channel",
+  // Pass a token if your project enables the App Certificate.
+  token: "006d32246dedc6f421fb57687c4e957bd93IABYwlQDUMfGjbaDNYXqm/74eX8VQctTrGhO6kkTvlP272LMzZAAAAAAEADSvifOO4FYYQEAAQA8gVhh",
+  // Set the user role in the channel.
+  role: "host" as ClientRole
+};
+
 export const EditSlidePresenterPageContainer = () => {
   const navPrevButtonRef = useRef<HTMLButtonElement>(null);
   const navNextButtonRef = useRef<HTMLButtonElement>(null);
   
   const [isPresenting, setIsPresenting] = useState(false);
+
+  const [agoraRtc, setAgoraRtc] = useState<IAgoraRTC | null>(null);
+  const [client, setClient] = useState<IAgoraRTCClient | null>(null);
+  const [isLive, setIsLive] = useState(false);
+
+  useEffect(() => {
+    const loadAgora = async () => {
+      const instance = (await import('agora-rtc-sdk-ng')).default;
+      setAgoraRtc(instance);
+    };
+
+    loadAgora();
+  }, []);
+
+  const [localAudioTrack, setLocalAudioTrack] = useState<IMicrophoneAudioTrack | null>(null) 
 
   const onBeforeInit = (swiper: SwiperCore) => {
     if (typeof swiper.params.navigation === 'boolean') {
@@ -62,6 +92,42 @@ export const EditSlidePresenterPageContainer = () => {
     }
   };
 
+  const createClient = () => {
+    if (!agoraRtc) return 
+
+    const createdClient = agoraRtc.createClient({ mode: "live", codec: "vp8" })
+    setClient(createdClient);
+
+    return createdClient;
+  }
+
+  const startLive = async () => {
+    const createdClient = createClient()
+
+    if (!createdClient) return 
+    if (!agoraRtc) return 
+
+    createdClient.setClientRole(options.role);
+    await createdClient.join(options.appId, options.channel, options.token, null);
+
+    var audioTrack = await agoraRtc.createMicrophoneAudioTrack();
+    setLocalAudioTrack(audioTrack);
+
+    await createdClient.publish([audioTrack]);
+  }
+
+  const endLive = async () => {
+    localAudioTrack?.close()
+    client?.leave()
+  }
+
+  const onMicOpen = async () => {
+    if (isLive) endLive()
+    else startLive()
+
+    setIsLive((prev) => !prev) 
+  }
+
   return (
     <>
       <GlobalStyles />
@@ -74,6 +140,7 @@ export const EditSlidePresenterPageContainer = () => {
           onPresent={(_event, status) => {
             setIsPresenting(status);
           }}
+          onMicOpen={onMicOpen}
         />
         <StyledSwiper
           onBeforeInit={onBeforeInit}
