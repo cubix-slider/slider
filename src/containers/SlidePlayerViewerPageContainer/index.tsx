@@ -252,7 +252,7 @@ export const SlidePlayerViewerPageContainer = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'start',
-                alignItems: 'start',
+                alignItems: 'center',
                 p: ['30px', null, '56px'],
               }}
             >
@@ -267,15 +267,20 @@ export const SlidePlayerViewerPageContainer = () => {
                   my: '24px',
                 }}
               >
-                {Array.from(new Array(2)).map((k) => (
-                  <Box
-                    key={k}
-                    component="img"
-                    src="https://via.placeholder.com/500"
-                    width="100%"
-                    height="100%"
-                  />
-                ))}
+                <Box
+                  component="img"
+                  alt="test image placeholder"
+                  src="https://cdn-images-1.medium.com/max/1200/1*WUKSrMzbSE3hGmvoUAMcQQ.png"
+                  width="100%"
+                  height="100%"
+                />
+                <Box
+                  component="img"
+                  alt="test image placeholder"
+                  src="https://www.pngitem.com/pimgs/m/734-7346479_livestream-png-transparent-png.png"
+                  width="100%"
+                  height="100%"
+                />
               </Box>
             </Box>
           </SwiperSlide>
@@ -327,6 +332,47 @@ export const SlidePlayerViewerPageContainer = () => {
                   Wala akong paki kay Danica
                 </Button>
               </Box>
+            </Box>
+          </SwiperSlide>
+          <SwiperSlide>
+            <Box
+              sx={{
+                height: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center',
+                p: ['30px', null, '56px'],
+              }}
+            >
+              <Typography
+                variant="h4"
+                sx={{
+                  mt: '40px',
+                }}
+              >
+                {`It's not about how small or big... It's about how passionate you are bringing value to the community`}
+              </Typography>
+              <Typography
+                variant="h4"
+                sx={{
+                  mt: '40px',
+                }}
+              >
+                Your friends at&nbsp;
+                <Box
+                  component="span"
+                  sx={{
+                    backgroundColor: '#1976d2',
+                    p: '8px',
+                    borderRadius: '8px',
+                  }}
+                  color="white"
+                >
+                  Cubix ❤️
+                </Box>
+              </Typography>
             </Box>
           </SwiperSlide>
           <LinearBuffer />

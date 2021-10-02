@@ -29,6 +29,7 @@ import { SlideControls } from './components/SlideControls';
 import { usePusherSubscribe } from '../../hooks/usePusherSubscribe';
 
 import { RtcTokenBuilder, RtcRole } from 'agora-access-token';
+import { LinearProgressWithLabel } from '../../components/LinearWithLabel';
 
 SwiperCore.use([Navigation, Keyboard]);
 
@@ -172,6 +173,22 @@ export const SlideViewerPageContainer = () => {
     swiper.slideTo(activeSlide);
   }, [activeSlide, shouldStopAutoSync, swiper]);
 
+  const [showPollResult, setShowPollResult] = useState(false);
+
+  useEffect(() => {
+    if (!selectedQuestionChoice) {
+      return;
+    }
+    const instance = setInterval(() => {
+      setShowPollResult(true);
+    }, 1500);
+    return () => clearInterval(instance);
+  }, [selectedQuestionChoice]);
+
+  const handleOnQuestionSelect = (questionChoice: string) => {
+    setSelectedQuestionChoice(questionChoice);
+  };
+
   return (
     <>
       <GlobalStyles />
@@ -275,7 +292,7 @@ export const SlideViewerPageContainer = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'start',
-                alignItems: 'start',
+                alignItems: 'center',
                 p: ['30px', null, '56px'],
               }}
             >
@@ -297,27 +314,31 @@ export const SlideViewerPageContainer = () => {
                   my: '24px',
                 }}
               >
-                {Array.from(new Array(2)).map((k, index) => (
-                  <NextImage
-                    key={`image-${index}`}
-                    alt="test image placeholder"
-                    src="https://via.placeholder.com/500"
-                    width="100%"
-                    height="100%"
-                    layout="responsive"
-                  />
-                ))}
+                <Box
+                  component="img"
+                  alt="test image placeholder"
+                  src="https://cdn-images-1.medium.com/max/1200/1*WUKSrMzbSE3hGmvoUAMcQQ.png"
+                  width="100%"
+                  height="100%"
+                />
+                <Box
+                  component="img"
+                  alt="test image placeholder"
+                  src="https://www.pngitem.com/pimgs/m/734-7346479_livestream-png-transparent-png.png"
+                  width="100%"
+                  height="100%"
+                />
               </Box>
             </Box>
           </SwiperSlide>
           <SwiperSlide>
             <Box
               sx={{
-                height: '100%',
+                height: '100vh',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'start',
-                alignItems: 'start',
+                justifyContent: 'center',
+                alignItems: 'center',
                 p: ['30px', null, '56px'],
               }}
             >
@@ -340,20 +361,33 @@ export const SlideViewerPageContainer = () => {
                 }}
               >
                 {questionChoices.map((questionChoice) => (
-                  <Button
-                    key={questionChoice}
-                    // TODO
-                    // disabled={!!selectedQuestionChoice}
-                    variant={
-                      questionChoice === selectedQuestionChoice
-                        ? 'contained'
-                        : 'outlined'
-                    }
-                    sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
-                    onClick={() => setSelectedQuestionChoice(questionChoice)}
-                  >
-                    {questionChoice}
-                  </Button>
+                  <Box display="grid" key={questionChoice}>
+                    <Button
+                      // TODO
+                      // disabled={!!selectedQuestionChoice}
+                      variant={
+                        questionChoice === selectedQuestionChoice
+                          ? 'contained'
+                          : 'outlined'
+                      }
+                      sx={{
+                        textTransform: 'unset',
+                        fontSize: '24px',
+                        p: '16px',
+                      }}
+                      onClick={() =>
+                        !showPollResult &&
+                        handleOnQuestionSelect(questionChoice)
+                      }
+                    >
+                      {questionChoice}
+                    </Button>
+                    {showPollResult && (
+                      <LinearProgressWithLabel
+                        value={Math.floor(Math.random() * 10) + 1}
+                      />
+                    )}
+                  </Box>
                 ))}
               </Box>
             </Box>
@@ -361,7 +395,7 @@ export const SlideViewerPageContainer = () => {
           <SwiperSlide>
             <Box
               sx={{
-                height: '100%',
+                height: '100vh',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
@@ -370,14 +404,32 @@ export const SlideViewerPageContainer = () => {
                 p: ['30px', null, '56px'],
               }}
             >
-              <Typography variant="h1">Slider</Typography>
               <Typography
-                variant="h5"
+                variant="h4"
                 sx={{
                   mt: '40px',
                 }}
               >
-                An interactive way to create presentations
+                {`It's not about how small or big... It's about how passionate you are bringing value to the community`}
+              </Typography>
+              <Typography
+                variant="h4"
+                sx={{
+                  mt: '40px',
+                }}
+              >
+                Your friends at&nbsp;
+                <Box
+                  component="span"
+                  sx={{
+                    backgroundColor: '#1976d2',
+                    p: '8px',
+                    borderRadius: '8px',
+                  }}
+                  color="white"
+                >
+                  Cubix ❤️
+                </Box>
               </Typography>
             </Box>
           </SwiperSlide>
