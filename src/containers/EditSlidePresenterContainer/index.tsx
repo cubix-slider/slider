@@ -206,8 +206,8 @@ export const EditSlidePresenterPageContainer = () => {
       setRecordingResult(createdRecordingResult);
 
       // TODO Integration
-      // const player = new Audio(URL.createObjectURL(file));
-      // player.play();
+      const player = new Audio(URL.createObjectURL(file));
+      player.play();
     } else {
       await recorder.start();
       setRecordingResult((prev) => {
