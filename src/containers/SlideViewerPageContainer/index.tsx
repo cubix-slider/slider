@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
+import NextImage from 'next/image';
 
 import { IAgoraRTCClient, ClientRole, IAgoraRTC } from 'agora-rtc-sdk-ng';
 
@@ -56,7 +57,7 @@ export const SlideViewerPageContainer = () => {
   const router = useRouter();
   const { push } = router;
   const { view_id } = router.query;
-  
+
   const navPrevButtonRef = useRef<HTMLButtonElement>(null);
   const navNextButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -80,18 +81,25 @@ export const SlideViewerPageContainer = () => {
       };
       setAgoraRtc(instance);
 
-      if (!view_id) return
+      if (!view_id) return;
 
       const channelName = view_id as string;
-      const uid = Math.floor(100000000 + Math.random() * 900000000);;
+      const uid = Math.floor(100000000 + Math.random() * 900000000);
       const role = RtcRole.SUBSCRIBER;
-  
+
       const expirationTimeInSeconds = 86400;
       const currentTimestamp = Math.floor(Date.now() / 1000);
       const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
-  
-      const generatedToken = RtcTokenBuilder.buildTokenWithUid(options.appId, options.primaryCertificate, channelName, uid, role, privilegeExpiredTs);
-      
+
+      const generatedToken = RtcTokenBuilder.buildTokenWithUid(
+        options.appId,
+        options.primaryCertificate,
+        channelName,
+        uid,
+        role,
+        privilegeExpiredTs
+      );
+
       const createdClient = instance.createClient({
         mode: 'live',
         codec: 'vp8',
@@ -102,12 +110,7 @@ export const SlideViewerPageContainer = () => {
       if (!instance) return;
 
       createdClient.setClientRole(options.role);
-      await createdClient.join(
-        options.appId,
-        channelName,
-        generatedToken,
-        uid
-      );
+      await createdClient.join(options.appId, channelName, generatedToken, uid);
 
       createdClient.on('user-published', async (user, mediaType) => {
         await createdClient.subscribe(user, mediaType);
@@ -264,7 +267,7 @@ export const SlideViewerPageContainer = () => {
           <SwiperSlide>
             <Box
               sx={{
-                height: '100%',
+                height: '100vh',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'start',
@@ -272,7 +275,14 @@ export const SlideViewerPageContainer = () => {
                 p: ['30px', null, '56px'],
               }}
             >
-              <Typography variant="h1">Anong hayop si Karlito? 🐒</Typography>
+              <Typography
+                variant="h1"
+                sx={{
+                  fontSize: 'clamp(1rem, 10vw, 6rem)',
+                }}
+              >
+                Anong hayop si Karlito? 🐒
+              </Typography>
               <Divider sx={{ width: '100%' }} />
               <Box
                 sx={{
@@ -283,13 +293,14 @@ export const SlideViewerPageContainer = () => {
                   my: '24px',
                 }}
               >
-                {Array.from(new Array(2)).map((k) => (
-                  <Box
-                    key={k}
-                    component="img"
+                {Array.from(new Array(2)).map((k, index) => (
+                  <NextImage
+                    key={`image-${index}`}
+                    alt="test image placeholder"
                     src="https://via.placeholder.com/500"
                     width="100%"
                     height="100%"
+                    layout="responsive"
                   />
                 ))}
               </Box>
@@ -306,7 +317,13 @@ export const SlideViewerPageContainer = () => {
                 p: ['30px', null, '56px'],
               }}
             >
-              <Typography variant="h3" textAlign="center">
+              <Typography
+                variant="h3"
+                textAlign="center"
+                sx={{
+                  fontSize: 'clamp(1rem, 10vw, 3rem)',
+                }}
+              >
                 {`Nakita mo na umiiyak si Danica sa hallway. Nalaman mo na si Danica ay "Broken Hearted". Ano ang iyong gagawin?`}
               </Typography>
               <Box
