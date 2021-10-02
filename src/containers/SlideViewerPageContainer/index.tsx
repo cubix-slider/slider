@@ -72,6 +72,7 @@ export const SlideViewerPageContainer = () => {
 
   const [didAutoplayFailed, setDidAutoplayFailed] = useState(false);
 
+  const [hasLeftChannel, setHasLeftChannel] = useState(false);
   const [selectedQuestionChoice, setSelectedQuestionChoice] = useState('');
 
   useEffect(() => {
@@ -127,6 +128,7 @@ export const SlideViewerPageContainer = () => {
 
   const leaveChannel = async () => {
     client?.leave();
+    setHasLeftChannel(true);
   };
 
   const onBeforeInit = (swiper: SwiperCore) => {
@@ -220,7 +222,7 @@ export const SlideViewerPageContainer = () => {
             </DialogActions>
           </Dialog>
         )}
-        <SlideControls onLeave={leaveChannel} onSync={handleOnSync} />
+        {!hasLeftChannel && (<SlideControls onLeave={leaveChannel} onSync={handleOnSync} />)}
         <StyledSwiper
           onBeforeInit={onBeforeInit}
           spaceBetween={50}
