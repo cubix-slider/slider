@@ -420,7 +420,7 @@ export const SlideViewerPageContainer = () => {
                   mt: '40px',
                 }}
               >
-                Your friends at&nbsp;
+                - Your friends at&nbsp;
                 <Box
                   component="span"
                   sx={{

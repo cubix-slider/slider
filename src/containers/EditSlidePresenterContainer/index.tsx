@@ -455,7 +455,7 @@ export const EditSlidePresenterPageContainer = () => {
                   mt: '40px',
                 }}
               >
-                Your friends at&nbsp;
+                - Your friends at&nbsp;
                 <Box
                   component="span"
                   sx={{
