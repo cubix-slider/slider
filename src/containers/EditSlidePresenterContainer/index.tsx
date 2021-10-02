@@ -350,9 +350,9 @@ export const EditSlidePresenterPageContainer = () => {
                   my: '24px',
                 }}
               >
-                {Array.from(new Array(2)).map((k) => (
+                {Array.from(new Array(2)).map((k, index) => (
                   <NextImage
-                    key={k}
+                    key={`image-${index}`}
                     alt="test image placeholder"
                     src="https://via.placeholder.com/500"
                     width="100%"
