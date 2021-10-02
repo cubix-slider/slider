@@ -215,6 +215,7 @@ export const SlideViewerPageContainer = () => {
           onBeforeInit={onBeforeInit}
           spaceBetween={50}
           slidesPerView={1}
+          autoHeight={true}
           onSwiper={(swiper) => setSwiper(swiper)}
           keyboard={{
             enabled: true,
@@ -377,35 +378,35 @@ export const SlideViewerPageContainer = () => {
               </Typography>
             </Box>
           </SwiperSlide>
-          <IconButton
-            ref={navPrevButtonRef}
-            sx={{
-              position: 'absolute',
-              bottom: 24,
-              right: 72,
-              zIndex: 2,
-            }}
-            onClick={() => {
-              setShouldStopAutoSync(true);
-            }}
-          >
-            <KeyboardArrowLeftIcon />
-          </IconButton>
-          <IconButton
-            ref={navNextButtonRef}
-            sx={{
-              position: 'absolute',
-              bottom: 24,
-              right: 24,
-              zIndex: 2,
-            }}
-            onClick={() => {
-              setShouldStopAutoSync(true);
-            }}
-          >
-            <KeyboardArrowRightIcon />
-          </IconButton>
         </StyledSwiper>
+        <IconButton
+          ref={navPrevButtonRef}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 72,
+            zIndex: 2,
+          }}
+          onClick={() => {
+            setShouldStopAutoSync(true);
+          }}
+        >
+          <KeyboardArrowLeftIcon />
+        </IconButton>
+        <IconButton
+          ref={navNextButtonRef}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 2,
+          }}
+          onClick={() => {
+            setShouldStopAutoSync(true);
+          }}
+        >
+          <KeyboardArrowRightIcon />
+        </IconButton>
       </Box>
     </>
   );

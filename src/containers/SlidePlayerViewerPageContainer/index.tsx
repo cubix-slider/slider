@@ -183,6 +183,7 @@ export const SlidePlayerViewerPageContainer = () => {
           spaceBetween={50}
           slidesPerView={1}
           onSwiper={(swiper) => setSwiper(swiper)}
+          autoHeight={true}
           keyboard={{
             enabled: true,
           }}
@@ -194,7 +195,7 @@ export const SlidePlayerViewerPageContainer = () => {
             delay: 2000,
           }}
         >
-                    <SwiperSlide>
+          <SwiperSlide>
             <Box
               sx={{
                 height: '100%',
@@ -325,35 +326,35 @@ export const SlidePlayerViewerPageContainer = () => {
             </Box>
           </SwiperSlide>
           <LinearBuffer />
-          <IconButton
-            ref={navPrevButtonRef}
-            sx={{
-              position: 'absolute',
-              bottom: 24,
-              right: 72,
-              zIndex: 2,
-            }}
-            onClick={() => {
-              setShouldStopAutoSync(true);
-            }}
-          >
-            <KeyboardArrowLeftIcon />
-          </IconButton>
-          <IconButton
-            ref={navNextButtonRef}
-            sx={{
-              position: 'absolute',
-              bottom: 24,
-              right: 24,
-              zIndex: 2,
-            }}
-            onClick={() => {
-              setShouldStopAutoSync(true);
-            }}
-          >
-            <KeyboardArrowRightIcon />
-          </IconButton>
         </StyledSwiper>
+        <IconButton
+          ref={navPrevButtonRef}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 72,
+            zIndex: 2,
+          }}
+          onClick={() => {
+            setShouldStopAutoSync(true);
+          }}
+        >
+          <KeyboardArrowLeftIcon />
+        </IconButton>
+        <IconButton
+          ref={navNextButtonRef}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 2,
+          }}
+          onClick={() => {
+            setShouldStopAutoSync(true);
+          }}
+        >
+          <KeyboardArrowRightIcon />
+        </IconButton>
       </Box>
     </>
   );
