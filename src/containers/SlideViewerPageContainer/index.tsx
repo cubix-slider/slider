@@ -45,6 +45,13 @@ const options = {
   role: 'audience' as ClientRole,
 };
 
+const questionChoices = [
+  'Magpapayo kay Danica ng magagandang salita',
+  'Tatawanan si Danica',
+  'Bibigyan si Danica ng pang kulam',
+  'Wala akong paki kay Danica',
+];
+
 export const SlideViewerPageContainer = () => {
   const router = useRouter();
   const { push } = router;
@@ -62,6 +69,8 @@ export const SlideViewerPageContainer = () => {
   const [shouldStopAutoSync, setShouldStopAutoSync] = useState(false);
 
   const [didAutoplayFailed, setDidAutoplayFailed] = useState(false);
+
+  const [selectedQuestionChoice, setSelectedQuestionChoice] = useState('');
 
   useEffect(() => {
     const loadAgora = async () => {
@@ -309,30 +318,22 @@ export const SlideViewerPageContainer = () => {
                   mx: 'auto',
                 }}
               >
-                <Button
-                  variant="outlined"
-                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
-                >
-                  Magpapayo kay Danica ng magagandang salita
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
-                >
-                  Tatawanan si Danica
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
-                >
-                  Bibigyan si Danica ng pang kulam
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
-                >
-                  Wala akong paki kay Danica
-                </Button>
+                {questionChoices.map((questionChoice) => (
+                  <Button
+                    key={questionChoice}
+                    // TODO
+                    // disabled={!!selectedQuestionChoice}
+                    variant={
+                      questionChoice === selectedQuestionChoice
+                        ? 'contained'
+                        : 'outlined'
+                    }
+                    sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
+                    onClick={() => setSelectedQuestionChoice(questionChoice)}
+                  >
+                    {questionChoice}
+                  </Button>
+                ))}
               </Box>
             </Box>
           </SwiperSlide>

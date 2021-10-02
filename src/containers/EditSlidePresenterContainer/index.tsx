@@ -395,7 +395,8 @@ export const EditSlidePresenterPageContainer = () => {
                 {questionChoices.map((questionChoice) => (
                   <Button
                     key={questionChoice}
-                    disabled={!!selectedQuestionChoice}
+                    // TODO
+                    // disabled={!!selectedQuestionChoice}
                     variant={
                       questionChoice === selectedQuestionChoice
                         ? 'contained'
