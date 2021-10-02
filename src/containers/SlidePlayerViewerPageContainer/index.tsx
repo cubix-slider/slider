@@ -207,7 +207,9 @@ export const SlidePlayerViewerPageContainer = () => {
                 p: ['30px', null, '56px'],
               }}
             >
-              <Typography variant="h1">Slider</Typography>
+              <Typography variant="h1" fontWeight="bold">
+                Slider
+              </Typography>
               <Typography
                 variant="h5"
                 sx={{
@@ -229,7 +231,9 @@ export const SlidePlayerViewerPageContainer = () => {
                 p: ['30px', null, '56px'],
               }}
             >
-              <Typography variant="h1">Slider</Typography>
+              <Typography variant="h1" fontWeight="bold">
+                Slider
+              </Typography>
               <Divider sx={{ width: '100%' }} />
               <Typography
                 variant="h5"

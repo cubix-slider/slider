@@ -36,7 +36,7 @@ const StyledSwiper = styled(Swiper)`
 
 const options = {
   // Pass your app ID here.
-  appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || "",
+  appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || '',
   // Pass your primary certificate here.
   primaryCertificate: process.env.NEXT_PUBLIC_AGORA_PRIMARY_CERTIFICATE || '',
   // Set the user role in the channel.
@@ -172,17 +172,27 @@ export const EditSlidePresenterPageContainer = () => {
     if (!createdClient) return;
     if (!agoraRtc) return;
 
-    const channelName = (Math.random() + 1).toString(36).substring(4).toUpperCase();
-    const uid = Math.floor(100000000 + Math.random() * 900000000);;
+    const channelName = (Math.random() + 1)
+      .toString(36)
+      .substring(4)
+      .toUpperCase();
+    const uid = Math.floor(100000000 + Math.random() * 900000000);
     const role = RtcRole.PUBLISHER;
 
     const expirationTimeInSeconds = 86400;
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
 
-    const generatedToken = RtcTokenBuilder.buildTokenWithUid(options.appId, options.primaryCertificate, channelName, uid, role, privilegeExpiredTs);
+    const generatedToken = RtcTokenBuilder.buildTokenWithUid(
+      options.appId,
+      options.primaryCertificate,
+      channelName,
+      uid,
+      role,
+      privilegeExpiredTs
+    );
 
-    navigator.clipboard.writeText(`${ENV_BASE_URL}/${channelName}`)
+    navigator.clipboard.writeText(`${ENV_BASE_URL}/${channelName}`);
 
     createdClient.setClientRole(options.role);
     await createdClient.join(options.appId, channelName, generatedToken, uid);
@@ -286,7 +296,9 @@ export const EditSlidePresenterPageContainer = () => {
                 p: ['30px', null, '56px'],
               }}
             >
-              <Typography variant="h1">Slider</Typography>
+              <Typography variant="h1" fontWeight="bold">
+                Slider
+              </Typography>
               <Typography
                 variant="h5"
                 sx={{
@@ -308,7 +320,9 @@ export const EditSlidePresenterPageContainer = () => {
                 p: ['30px', null, '56px'],
               }}
             >
-              <Typography variant="h1">Slider</Typography>
+              <Typography variant="h1" fontWeight="bold">
+                Slider
+              </Typography>
               <Divider sx={{ width: '100%' }} />
               <Typography
                 variant="h5"
