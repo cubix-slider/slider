@@ -3,6 +3,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import SwiperCore, { Navigation, Keyboard } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
+import NextImage from 'next/image';
+
 import {
   IAgoraRTCClient,
   ClientRole,
@@ -34,7 +36,7 @@ const StyledSwiper = styled(Swiper)`
 
 const options = {
   // Pass your app ID here.
-  appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || "",
+  appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || '',
   // Pass your primary certificate here.
   primaryCertificate: process.env.NEXT_PUBLIC_AGORA_PRIMARY_CERTIFICATE || '',
   // Set the user role in the channel.
@@ -51,6 +53,13 @@ type RecordTimeStamp = {
   timestamp: number;
 };
 
+const questionChoices = [
+  'Magpapayo kay Danica ng magagandang salita',
+  'Tatawanan si Danica',
+  'Bibigyan si Danica ng pang kulam',
+  'Wala akong paki kay Danica',
+];
+
 export const EditSlidePresenterPageContainer = () => {
   const navPrevButtonRef = useRef<HTMLButtonElement>(null);
   const navNextButtonRef = useRef<HTMLButtonElement>(null);
@@ -66,6 +75,8 @@ export const EditSlidePresenterPageContainer = () => {
   const [recordingResult, setRecordingResult] =
     useState<RecordingResult | null>(null);
   const [activeSlide, setActiveSlide] = useState(0);
+
+  const [selectedQuestionChoice, setSelectedQuestionChoice] = useState('');
 
   useEffect(() => {
     const loadAgora = async () => {
@@ -161,17 +172,27 @@ export const EditSlidePresenterPageContainer = () => {
     if (!createdClient) return;
     if (!agoraRtc) return;
 
-    const channelName = (Math.random() + 1).toString(36).substring(4).toUpperCase();
-    const uid = Math.floor(100000000 + Math.random() * 900000000);;
+    const channelName = (Math.random() + 1)
+      .toString(36)
+      .substring(4)
+      .toUpperCase();
+    const uid = Math.floor(100000000 + Math.random() * 900000000);
     const role = RtcRole.PUBLISHER;
 
     const expirationTimeInSeconds = 86400;
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
 
-    const generatedToken = RtcTokenBuilder.buildTokenWithUid(options.appId, options.primaryCertificate, channelName, uid, role, privilegeExpiredTs);
+    const generatedToken = RtcTokenBuilder.buildTokenWithUid(
+      options.appId,
+      options.primaryCertificate,
+      channelName,
+      uid,
+      role,
+      privilegeExpiredTs
+    );
 
-    navigator.clipboard.writeText(`${ENV_BASE_URL}/${channelName}`)
+    navigator.clipboard.writeText(`${ENV_BASE_URL}/${channelName}`);
 
     createdClient.setClientRole(options.role);
     await createdClient.join(options.appId, channelName, generatedToken, uid);
@@ -248,6 +269,7 @@ export const EditSlidePresenterPageContainer = () => {
           onBeforeInit={onBeforeInit}
           spaceBetween={50}
           slidesPerView={1}
+          autoHeight={true}
           onSwiper={(swiper) => setSwiper(swiper)}
           keyboard={{
             enabled: true,
@@ -265,7 +287,7 @@ export const EditSlidePresenterPageContainer = () => {
           <SwiperSlide>
             <Box
               sx={{
-                height: '100%',
+                height: '100vh',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
@@ -274,7 +296,9 @@ export const EditSlidePresenterPageContainer = () => {
                 p: ['30px', null, '56px'],
               }}
             >
-              <Typography variant="h1">Slider</Typography>
+              <Typography variant="h1" fontWeight="bold">
+                Slider
+              </Typography>
               <Typography
                 variant="h5"
                 sx={{
@@ -296,7 +320,9 @@ export const EditSlidePresenterPageContainer = () => {
                 p: ['30px', null, '56px'],
               }}
             >
-              <Typography variant="h1">Slider</Typography>
+              <Typography variant="h1" fontWeight="bold">
+                Slider
+              </Typography>
               <Divider sx={{ width: '100%' }} />
               <Typography
                 variant="h5"
@@ -319,7 +345,14 @@ export const EditSlidePresenterPageContainer = () => {
                 p: ['30px', null, '56px'],
               }}
             >
-              <Typography variant="h1">Anong hayop si Karlito? 🐒</Typography>
+              <Typography
+                variant="h1"
+                sx={{
+                  fontSize: 'clamp(1rem, 10vw, 6rem)',
+                }}
+              >
+                Anong hayop si Karlito? 🐒
+              </Typography>
               <Divider sx={{ width: '100%' }} />
               <Box
                 sx={{
@@ -331,13 +364,14 @@ export const EditSlidePresenterPageContainer = () => {
                   my: '24px',
                 }}
               >
-                {Array.from(new Array(2)).map((k) => (
-                  <Box
-                    key={k}
-                    component="img"
+                {Array.from(new Array(2)).map((k, index) => (
+                  <NextImage
+                    key={`image-${index}`}
+                    alt="test image placeholder"
                     src="https://via.placeholder.com/500"
                     width="100%"
                     height="100%"
+                    layout="responsive"
                   />
                 ))}
               </Box>
@@ -354,7 +388,13 @@ export const EditSlidePresenterPageContainer = () => {
                 p: ['30px', null, '56px'],
               }}
             >
-              <Typography variant="h3" textAlign="center">
+              <Typography
+                variant="h3"
+                textAlign="center"
+                sx={{
+                  fontSize: 'clamp(1rem, 10vw, 3rem)',
+                }}
+              >
                 {`Nakita mo na umiiyak si Danica sa hallway. Nalaman mo na si Danica ay "Broken Hearted". Ano ang iyong gagawin?`}
               </Typography>
               <Box
@@ -362,34 +402,26 @@ export const EditSlidePresenterPageContainer = () => {
                   display: 'grid',
                   gridTemplateColumns: ['1fr', null, 'repeat(2, 1fr)'],
                   gap: '16px',
-                  my: '96px',
+                  my: ['40px', null, '96px'],
                   mx: 'auto',
                 }}
               >
-                <Button
-                  variant="outlined"
-                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
-                >
-                  Magpapayo kay Danica ng magagandang salita
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
-                >
-                  Tatawanan si Danica
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
-                >
-                  Bibigyan si Danica ng pang kulam
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
-                >
-                  Wala akong paki kay Danica
-                </Button>
+                {questionChoices.map((questionChoice) => (
+                  <Button
+                    key={questionChoice}
+                    // TODO
+                    // disabled={!!selectedQuestionChoice}
+                    variant={
+                      questionChoice === selectedQuestionChoice
+                        ? 'contained'
+                        : 'outlined'
+                    }
+                    sx={{ textTransform: 'unset', fontSize: '24px', p: '16px' }}
+                    onClick={() => setSelectedQuestionChoice(questionChoice)}
+                  >
+                    {questionChoice}
+                  </Button>
+                ))}
               </Box>
             </Box>
           </SwiperSlide>
@@ -416,29 +448,29 @@ export const EditSlidePresenterPageContainer = () => {
               </Typography>
             </Box>
           </SwiperSlide>
-          <IconButton
-            ref={navPrevButtonRef}
-            sx={{
-              position: 'absolute',
-              bottom: 24,
-              right: 72,
-              zIndex: 2,
-            }}
-          >
-            <KeyboardArrowLeftIcon />
-          </IconButton>
-          <IconButton
-            ref={navNextButtonRef}
-            sx={{
-              position: 'absolute',
-              bottom: 24,
-              right: 24,
-              zIndex: 2,
-            }}
-          >
-            <KeyboardArrowRightIcon />
-          </IconButton>
         </StyledSwiper>
+        <IconButton
+          ref={navPrevButtonRef}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 72,
+            zIndex: 2,
+          }}
+        >
+          <KeyboardArrowLeftIcon />
+        </IconButton>
+        <IconButton
+          ref={navNextButtonRef}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 2,
+          }}
+        >
+          <KeyboardArrowRightIcon />
+        </IconButton>
       </Box>
     </>
   );

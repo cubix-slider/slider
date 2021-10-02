@@ -35,12 +35,12 @@ export const LinearBuffer = () => {
   return (
     <Box
       sx={{
-        position: 'absolute',
+        position: 'fixed',
         bottom: 70,
         zIndex: 2,
         height: '16px',
         width: '100%',
-        padding: '80px',
+        padding: ['40px', '80px'],
       }}
     >
       <LinearProgress variant="buffer" value={progress} valueBuffer={buffer} />
