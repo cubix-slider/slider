@@ -27,6 +27,8 @@ import { SlideControls } from './components/SlideControls';
 
 import { usePusherSubscribe } from '../../hooks/usePusherSubscribe';
 
+import { RtcTokenBuilder, RtcRole } from 'agora-access-token';
+
 SwiperCore.use([Navigation, Keyboard]);
 
 const StyledSwiper = styled(Swiper)`
@@ -37,17 +39,17 @@ const StyledSwiper = styled(Swiper)`
 const options = {
   // Pass your app ID here.
   appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || '',
-  // Set the channel name.
-  channel: 'test-channel',
-  // Pass a token if your project enables the App Certificate.
-  token:
-    '006d32246dedc6f421fb57687c4e957bd93IADUKrjxQvF4XnMSAcR1v2j5mVKk0R07IYkXjE1uRGlVJmLMzZAAAAAAEADSvifOb4FYYQEAAQBwgVhh',
+  // Pass your primary certificate here.
+  primaryCertificate: process.env.NEXT_PUBLIC_AGORA_PRIMARY_CERTIFICATE || '',
   // Set the user role in the channel.
   role: 'audience' as ClientRole,
 };
 
 export const SlideViewerPageContainer = () => {
-  const { push } = useRouter();
+  const router = useRouter();
+  const { push } = router;
+  const { view_id } = router.query;
+  
   const navPrevButtonRef = useRef<HTMLButtonElement>(null);
   const navNextButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -69,6 +71,18 @@ export const SlideViewerPageContainer = () => {
       };
       setAgoraRtc(instance);
 
+      if (!view_id) return
+
+      const channelName = view_id as string;
+      const uid = Math.floor(100000000 + Math.random() * 900000000);;
+      const role = RtcRole.SUBSCRIBER;
+  
+      const expirationTimeInSeconds = 86400;
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+      const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
+  
+      const generatedToken = RtcTokenBuilder.buildTokenWithUid(options.appId, options.primaryCertificate, channelName, uid, role, privilegeExpiredTs);
+      
       const createdClient = instance.createClient({
         mode: 'live',
         codec: 'vp8',
@@ -81,9 +95,9 @@ export const SlideViewerPageContainer = () => {
       createdClient.setClientRole(options.role);
       await createdClient.join(
         options.appId,
-        options.channel,
-        options.token,
-        null
+        channelName,
+        generatedToken,
+        uid
       );
 
       createdClient.on('user-published', async (user, mediaType) => {
@@ -96,40 +110,7 @@ export const SlideViewerPageContainer = () => {
     };
 
     loadAgora();
-  }, []);
-
-  const createClient = () => {
-    if (!agoraRtc) return;
-
-    const createdClient = agoraRtc.createClient({ mode: 'live', codec: 'vp8' });
-    setClient(createdClient);
-
-    return createdClient;
-  };
-
-  // TODO - Remove
-  const joinChannel = async (createdAgoraRtc: IAgoraRTC) => {
-    const createdClient = createClient();
-
-    if (!createdClient) return;
-    if (!createdAgoraRtc) return;
-
-    createdClient.setClientRole(options.role);
-    await createdClient.join(
-      options.appId,
-      options.channel,
-      options.token,
-      null
-    );
-
-    createdClient.on('user-published', async (user, mediaType) => {
-      await createdClient.subscribe(user, mediaType);
-
-      if (mediaType === 'audio') {
-        user.audioTrack?.play();
-      }
-    });
-  };
+  }, [view_id]);
 
   const leaveChannel = async () => {
     client?.leave();

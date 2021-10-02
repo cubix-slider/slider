@@ -23,6 +23,8 @@ import { SlideControls } from './components/SlideControls';
 
 import { ENV_BASE_URL } from '../../constants/envs';
 
+import { RtcTokenBuilder, RtcRole } from 'agora-access-token';
+
 // TODO Token Generator
 
 SwiperCore.use([Navigation, Keyboard]);
@@ -34,12 +36,9 @@ const StyledSwiper = styled(Swiper)`
 
 const options = {
   // Pass your app ID here.
-  appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || '',
-  // Set the channel name.
-  channel: 'test-channel',
-  // Pass a token if your project enables the App Certificate.
-  token:
-    '006d32246dedc6f421fb57687c4e957bd93IABYwlQDUMfGjbaDNYXqm/74eX8VQctTrGhO6kkTvlP272LMzZAAAAAAEADSvifOO4FYYQEAAQA8gVhh',
+  appId: process.env.NEXT_PUBLIC_AGORA_APP_ID || "",
+  // Pass your primary certificate here.
+  primaryCertificate: process.env.NEXT_PUBLIC_AGORA_PRIMARY_CERTIFICATE || '',
   // Set the user role in the channel.
   role: 'host' as ClientRole,
 };
@@ -173,13 +172,20 @@ export const EditSlidePresenterPageContainer = () => {
     if (!createdClient) return;
     if (!agoraRtc) return;
 
+    const channelName = (Math.random() + 1).toString(36).substring(4).toUpperCase();
+    const uid = Math.floor(100000000 + Math.random() * 900000000);;
+    const role = RtcRole.PUBLISHER;
+
+    const expirationTimeInSeconds = 86400;
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
+
+    const generatedToken = RtcTokenBuilder.buildTokenWithUid(options.appId, options.primaryCertificate, channelName, uid, role, privilegeExpiredTs);
+
+    navigator.clipboard.writeText(`${ENV_BASE_URL}/${channelName}`)
+
     createdClient.setClientRole(options.role);
-    await createdClient.join(
-      options.appId,
-      options.channel,
-      options.token,
-      null
-    );
+    await createdClient.join(options.appId, channelName, generatedToken, uid);
 
     var audioTrack = await agoraRtc.createMicrophoneAudioTrack();
     setLocalAudioTrack(audioTrack);
