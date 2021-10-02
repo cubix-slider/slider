@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.1",
     "@mui/material": "^5.0.2",
+    "agora-access-token": "^2.0.4",
     "agora-rtc-sdk-ng": "^4.7.1",
     "dotenv": "^10.0.0",
     "mic-recorder": "^4.9.0",
