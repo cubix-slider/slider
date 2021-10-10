@@ -28,6 +28,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
   await pusher.trigger('slide-1', Events.SliderSlide, req.body);
   
-  res.status(200).json({ name: 'John Doe' });
+  res.status(204).json({});
 };
 export default handler;
