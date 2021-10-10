@@ -16,7 +16,7 @@ export type Data = {};
 const handler = (req: NextApiRequest, res: NextApiResponse<Data>) => {
   // console.log(1);
   if (req.method !== 'POST') {
-    return res.status(404);
+    return res.status(404).json({});
   }
   // console.log(2);
 
