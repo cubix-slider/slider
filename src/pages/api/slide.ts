@@ -13,10 +13,12 @@ import { Events } from '../../constants/events';
 
 export type Data = {};
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+const handler = (req: NextApiRequest, res: NextApiResponse<Data>) => {
+  console.log(1);
   if (req.method !== 'POST') {
     return res.status(404);
   }
+  console.log(2);
 
   // const pusher = new Pusher({
   //   appId: ENV_PUSHER_APP_ID,
