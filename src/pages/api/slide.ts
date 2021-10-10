@@ -18,16 +18,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     return res.status(404).json({});
   }
 
-  // const pusher = new Pusher({
-  //   appId: ENV_PUSHER_APP_ID,
-  //   key: ENV_PUSHER_API_KEY,
-  //   secret: ENV_PUSHER_SECRET_KEY,
-  //   cluster: ENV_PUSHER_CLUSTER,
-  // });
+  const pusher = new Pusher({
+    appId: ENV_PUSHER_APP_ID,
+    key: ENV_PUSHER_API_KEY,
+    secret: ENV_PUSHER_SECRET_KEY,
+    cluster: ENV_PUSHER_CLUSTER,
+  });
 
 
-  // await pusher.trigger('slide-1', Events.SliderSlide, req.body);
+  await pusher.trigger('slide-1', Events.SliderSlide, req.body);
   
-  res.status(200).json({});
+  res.status(200).json({
+    status: 'Ok',
+  });
 };
 export default handler;
