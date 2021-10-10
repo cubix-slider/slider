@@ -15,9 +15,9 @@ export type Data = {};
 
 const handler = (req: NextApiRequest, res: NextApiResponse<Data>) => {
   // console.log(1);
-  // if (req.method !== 'POST') {
-  //   return res.status(404);
-  // }
+  if (req.method !== 'POST') {
+    return res.status(404);
+  }
   // console.log(2);
 
   // const pusher = new Pusher({
