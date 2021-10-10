@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import Pusher from 'pusher';
+// import Pusher from 'pusher';
 
 import {
   ENV_PUSHER_API_KEY,
@@ -30,6 +30,6 @@ const handler = (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
   // await pusher.trigger('slide-1', Events.SliderSlide, req.body);
   
-  res.status(204).send({});
+  res.status(204).json({});
 };
 export default handler;
