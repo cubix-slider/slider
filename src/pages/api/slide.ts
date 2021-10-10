@@ -9,6 +9,7 @@ import {
   ENV_PUSHER_CLUSTER,
   ENV_PUSHER_SECRET_KEY,
 } from '../../constants/envs';
+import { Events } from '../../constants/events';
 
 export type Data = {};
 
@@ -25,7 +26,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   });
 
 
-  await pusher.trigger('slide-1', 'event:slider-slide', req.body);
+  await pusher.trigger('slide-1', Events.SliderSlide, req.body);
   
   res.status(204).send({});
 };
